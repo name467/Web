@@ -1,0 +1,502 @@
+/**
+ * ============================================================================
+ * NEONVAULT GLOBAL STYLES
+ * ============================================================================
+ * This file contains all global CSS styles for the gaming portal.
+ * It sets up the design token system, base styles, and utility classes.
+ * 
+ * STRUCTURE:
+ * 1. External imports (must come first)
+ * 2. Tailwind imports
+ * 3. CSS Variables (design tokens)
+ * 4. Base styles
+ * 5. Utility classes
+ * 6. Animations
+ */
+
+/* Google Fonts - Must be at the very top before other rules */
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&family=Press+Start+2P&family=VT323&family=Share+Tech+Mono&family=Audiowide&family=Exo+2:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
+@import 'tailwindcss';
+@import 'tw-animate-css';
+
+/* Enable dark variant for Tailwind */
+@custom-variant dark (&:is(.dark *));
+
+/* ============================================================================
+   GOOGLE FONTS REFERENCE
+   ============================================================================
+   We import multiple fonts to support different themes:
+   - Orbitron: Futuristic, geometric (Cyberpunk theme)
+   - Rajdhani: Clean tech font for body text
+   - Press Start 2P: Retro pixel font (Retro Arcade theme)
+   - VT323: Terminal/CRT style font
+   - Share Tech Mono: Monospace for hacker theme
+   - Audiowide: Bold futuristic (Synthwave theme)
+   - Exo 2: Clean geometric sans-serif
+   - Inter: Clean modern sans-serif (Minimalist theme)
+   - JetBrains Mono: Developer-friendly monospace
+*/
+
+/* ============================================================================
+   CSS CUSTOM PROPERTIES (Design Tokens)
+   ============================================================================
+   These variables are updated dynamically when themes change.
+   The JavaScript theme system updates these on the :root element.
+*/
+:root {
+  /* Base colors - Cyberpunk theme defaults */
+  --background: #0a0a0f;
+  --foreground: #e0e0e0;
+  
+  /* Card/Panel colors */
+  --card: #12121a;
+  --card-foreground: #e0e0e0;
+  
+  /* Popover colors */
+  --popover: #12121a;
+  --popover-foreground: #e0e0e0;
+  
+  /* Primary color (main accent) */
+  --primary: #00f0ff;
+  --primary-foreground: #0a0a0f;
+  
+  /* Secondary color */
+  --secondary: #1a1a2e;
+  --secondary-foreground: #e0e0e0;
+  
+  /* Muted/subtle elements */
+  --muted: #16161f;
+  --muted-foreground: #6b6b80;
+  
+  /* Accent color (highlights) */
+  --accent: #ff00aa;
+  --accent-foreground: #ffffff;
+  
+  /* Destructive actions */
+  --destructive: #ff3333;
+  --destructive-foreground: #ffffff;
+  
+  /* Borders and inputs */
+  --border: #2a2a3e;
+  --input: #1a1a2e;
+  --ring: #00f0ff;
+  
+  /* Neon glow colors (unique to gaming themes) */
+  --neon-primary: #00f0ff;
+  --neon-secondary: #ff00aa;
+  
+  /* Sidebar specific */
+  --sidebar: #0d0d14;
+  --sidebar-foreground: #e0e0e0;
+  --sidebar-primary: #00f0ff;
+  --sidebar-primary-foreground: #0a0a0f;
+  --sidebar-accent: #1a1a2e;
+  --sidebar-accent-foreground: #e0e0e0;
+  --sidebar-border: #2a2a3e;
+  --sidebar-ring: #00f0ff;
+  
+  /* Border radius */
+  --radius: 0.5rem;
+  
+  /* Chart colors for any data visualization */
+  --chart-1: #00f0ff;
+  --chart-2: #ff00aa;
+  --chart-3: #00ff88;
+  --chart-4: #ffaa00;
+  --chart-5: #aa00ff;
+}
+
+/* ============================================================================
+   TAILWIND THEME CONFIGURATION
+   ============================================================================ */
+@theme inline {
+  --font-sans: 'Rajdhani', 'Inter', sans-serif;
+  --font-heading: 'Orbitron', sans-serif;
+  --font-mono: 'JetBrains Mono', 'Share Tech Mono', monospace;
+  
+  /* Map CSS variables to Tailwind colors */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  
+  /* Neon colors */
+  --color-neon-primary: var(--neon-primary);
+  --color-neon-secondary: var(--neon-secondary);
+  
+  /* Sidebar colors */
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+  
+  /* Chart colors */
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  
+  /* Border radius */
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+/* ============================================================================
+   BASE STYLES
+   ============================================================================ */
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  
+  html {
+    @apply bg-background;
+    scroll-behavior: smooth;
+  }
+  
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    /* Prevent text selection for a more app-like feel */
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  /* Headings use the special heading font */
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading, 'Orbitron', sans-serif);
+  }
+  
+  /* Custom scrollbar for that gaming feel */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    background: var(--background);
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 4px;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--primary);
+  }
+  
+  /* Focus visible for keyboard navigation */
+  :focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+  }
+  
+  /* Selection color */
+  ::selection {
+    background: var(--primary);
+    color: var(--primary-foreground);
+  }
+}
+
+/* ============================================================================
+   UTILITY CLASSES
+   ============================================================================ */
+@layer utilities {
+  /* Neon text glow effect */
+  .text-glow {
+    text-shadow: 
+      0 0 10px var(--neon-primary),
+      0 0 20px var(--neon-primary),
+      0 0 40px var(--neon-primary);
+  }
+  
+  .text-glow-secondary {
+    text-shadow: 
+      0 0 10px var(--neon-secondary),
+      0 0 20px var(--neon-secondary),
+      0 0 40px var(--neon-secondary);
+  }
+  
+  /* Box glow effects */
+  .box-glow {
+    box-shadow: 
+      0 0 10px var(--neon-primary),
+      0 0 20px rgba(0, 240, 255, 0.3),
+      inset 0 0 10px rgba(0, 240, 255, 0.1);
+  }
+  
+  .box-glow-secondary {
+    box-shadow: 
+      0 0 10px var(--neon-secondary),
+      0 0 20px rgba(255, 0, 170, 0.3),
+      inset 0 0 10px rgba(255, 0, 170, 0.1);
+  }
+  
+  /* Subtle glow for hover states */
+  .hover-glow {
+    transition: box-shadow 0.3s ease, border-color 0.3s ease;
+  }
+  
+  .hover-glow:hover {
+    box-shadow: 
+      0 0 15px var(--neon-primary),
+      0 0 30px rgba(0, 240, 255, 0.2);
+    border-color: var(--primary);
+  }
+  
+  /* Gradient text */
+  .gradient-text {
+    background: linear-gradient(135deg, var(--neon-primary), var(--neon-secondary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  
+  /* Neon border */
+  .neon-border {
+    border: 1px solid var(--primary);
+    box-shadow: 
+      0 0 5px var(--neon-primary),
+      inset 0 0 5px rgba(0, 240, 255, 0.1);
+  }
+  
+  /* Glass morphism effect */
+  .glass {
+    background: rgba(18, 18, 26, 0.8);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+  
+  /* Hide scrollbar but keep functionality */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  
+  /* Font size utilities for accessibility */
+  .text-size-small {
+    font-size: 0.875rem;
+    line-height: 1.5;
+  }
+  
+  .text-size-medium {
+    font-size: 1rem;
+    line-height: 1.5;
+  }
+  
+  .text-size-large {
+    font-size: 1.125rem;
+    line-height: 1.6;
+  }
+}
+
+/* ============================================================================
+   ANIMATIONS
+   ============================================================================ */
+@layer utilities {
+  /* Pulse glow animation */
+  @keyframes pulse-glow {
+    0%, 100% {
+      box-shadow: 0 0 10px var(--neon-primary), 0 0 20px rgba(0, 240, 255, 0.3);
+    }
+    50% {
+      box-shadow: 0 0 20px var(--neon-primary), 0 0 40px rgba(0, 240, 255, 0.5);
+    }
+  }
+  
+  .animate-pulse-glow {
+    animation: pulse-glow 2s ease-in-out infinite;
+  }
+  
+  /* Scan line effect (retro CRT) */
+  @keyframes scanline {
+    0% {
+      transform: translateY(-100%);
+    }
+    100% {
+      transform: translateY(100vh);
+    }
+  }
+  
+  .scanlines::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to bottom,
+      transparent 50%,
+      rgba(0, 0, 0, 0.1) 50%
+    );
+    background-size: 100% 4px;
+    pointer-events: none;
+    z-index: 100;
+  }
+  
+  /* Flicker effect */
+  @keyframes flicker {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.95; }
+    52% { opacity: 1; }
+    54% { opacity: 0.9; }
+    56% { opacity: 1; }
+  }
+  
+  .animate-flicker {
+    animation: flicker 3s linear infinite;
+  }
+  
+  /* Slide in from left */
+  @keyframes slide-in-left {
+    from {
+      transform: translateX(-100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+  
+  .animate-slide-in-left {
+    animation: slide-in-left 0.3s ease-out;
+  }
+  
+  /* Fade in up */
+  @keyframes fade-in-up {
+    from {
+      transform: translateY(20px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+  
+  .animate-fade-in-up {
+    animation: fade-in-up 0.4s ease-out;
+  }
+  
+  /* Scale in */
+  @keyframes scale-in {
+    from {
+      transform: scale(0.9);
+      opacity: 0;
+    }
+    to {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+  
+  .animate-scale-in {
+    animation: scale-in 0.3s ease-out;
+  }
+  
+  /* Glow pulse for loading states */
+  @keyframes glow-pulse {
+    0%, 100% {
+      filter: brightness(1) drop-shadow(0 0 5px var(--neon-primary));
+    }
+    50% {
+      filter: brightness(1.2) drop-shadow(0 0 20px var(--neon-primary));
+    }
+  }
+  
+  .animate-glow-pulse {
+    animation: glow-pulse 1.5s ease-in-out infinite;
+  }
+  
+  /* Typing cursor blink */
+  @keyframes blink {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0; }
+  }
+  
+  .animate-blink {
+    animation: blink 1s step-end infinite;
+  }
+}
+
+/* ============================================================================
+   REDUCED MOTION
+   ============================================================================
+   Respects user's preference for reduced motion for accessibility
+*/
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Also respect our custom reduced motion setting */
+.reduced-motion *,
+.reduced-motion *::before,
+.reduced-motion *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+}
+
+/* ============================================================================
+   HIGH CONTRAST MODE
+   ============================================================================ */
+.high-contrast {
+  --background: #000000;
+  --foreground: #ffffff;
+  --card: #111111;
+  --card-foreground: #ffffff;
+  --primary: #00ffff;
+  --primary-foreground: #000000;
+  --border: #ffffff;
+}
+
+/* ============================================================================
+   MOBILE OPTIMIZATIONS
+   ============================================================================ */
+@media (max-width: 768px) {
+  /* Larger touch targets */
+  button,
+  [role="button"],
+  a {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  /* Disable hover effects on touch devices */
+  @media (hover: none) {
+    .hover-glow:hover {
+      box-shadow: none;
+    }
+  }
+}
