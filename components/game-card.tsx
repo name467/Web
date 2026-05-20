@@ -54,16 +54,15 @@ export function GameCard({ game, onPlay, size = 'medium' }: GameCardProps) {
 
   /**
    * Handle play button click
-   * Opens gn-math.dev in a new tab for best game compatibility
-   * (Game sites often block iframe embedding via X-Frame-Options)
+   * Opens gn-math.dev through the browser proxy in the same tab
    */
   const handlePlayClick = () => {
     playSound('success');
     addToRecentlyPlayed(game.id);
     
-    // Open gn-math.dev directly in a new tab for the best game experience
-    // This avoids iframe restrictions that game sites commonly use
-    window.open('https://gn-math.dev', '_blank', 'noopener,noreferrer');
+    // Open gn-math.dev through our proxy in the browser page
+    const browserUrl = `/browser?url=${encodeURIComponent('https://gn-math.dev')}&game=${game.id}&name=${encodeURIComponent(game.title)}`;
+    router.push(browserUrl);
     
     onPlay?.(game);
   };

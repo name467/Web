@@ -223,34 +223,22 @@ function BrowserControls({
 // ============================================
 function QuickLinks({ onNavigate }: { onNavigate: (url: string, direct?: boolean) => void }) {
   const quickLinks = [
-    { name: 'DuckDuckGo', url: 'https://duckduckgo.com', icon: '🦆', external: false },
-    { name: 'Wikipedia', url: 'https://wikipedia.org', icon: '📚', external: false },
-    { name: 'GN Math', url: 'https://gn-math.dev', icon: '🎮', external: true },
-    { name: 'GitHub', url: 'https://github.com', icon: '💻', external: false },
+    { name: 'DuckDuckGo', url: 'https://duckduckgo.com', icon: '🦆' },
+    { name: 'Wikipedia', url: 'https://wikipedia.org', icon: '📚' },
+    { name: 'GN Math', url: 'https://gn-math.dev', icon: '🎮' },
+    { name: 'GitHub', url: 'https://github.com', icon: '💻' },
   ]
-
-  const handleClick = (link: typeof quickLinks[0]) => {
-    if (link.external) {
-      // Open external game sites in a new tab for best compatibility
-      window.open(link.url, '_blank', 'noopener,noreferrer')
-    } else {
-      onNavigate(link.url, false)
-    }
-  }
 
   return (
     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-2xl mx-auto p-4">
       {quickLinks.map((link) => (
         <button
           key={link.url}
-          onClick={() => handleClick(link)}
+          onClick={() => onNavigate(link.url)}
           className="flex flex-col items-center gap-2 p-4 rounded-xl bg-card/50 border border-border hover:border-primary/50 hover:bg-card transition-all"
         >
           <span className="text-2xl">{link.icon}</span>
           <span className="text-sm font-medium">{link.name}</span>
-          {link.external && (
-            <span className="text-xs text-muted-foreground">(opens new tab)</span>
-          )}
         </button>
       ))}
     </div>
@@ -536,13 +524,10 @@ function BrowserContent() {
             {/* The iframe */}
             <iframe
               ref={iframeRef}
-              src={isDirect ? currentUrl : getProxyUrl(currentUrl)}
+              src={getProxyUrl(currentUrl)}
               onLoad={handleIframeLoad}
               className="w-full h-full border-0"
-              sandbox={isDirect 
-                ? "allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox allow-pointer-lock allow-downloads allow-modals allow-presentation"
-                : "allow-scripts allow-same-origin allow-forms allow-popups allow-pointer-lock"
-              }
+              sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox allow-pointer-lock allow-downloads allow-modals allow-presentation"
               allow="fullscreen; autoplay; clipboard-write; encrypted-media; gyroscope; accelerometer; web-share"
               referrerPolicy="no-referrer-when-downgrade"
               title="Web Browser"
