@@ -21,10 +21,23 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 
+// List of domains that should use minimal proxy (game sites, SPAs, etc.)
+const MINIMAL_PROXY_DOMAINS = [
+  'gn-math.dev',
+  'mathsspot.com',
+  'coolmathgames.com',
+  'poki.com',
+  'crazygames.com',
+  'y8.com',
+  'kizi.com',
+  'miniclip.com',
+]
+
 export async function GET(request: NextRequest) {
   // Get the URL from query parameters
   const { searchParams } = new URL(request.url)
   const targetUrl = searchParams.get('url')
+  const minimalMode = searchParams.get('minimal') === 'true'
 
   // Validate that a URL was provided
   if (!targetUrl) {
@@ -37,6 +50,11 @@ export async function GET(request: NextRequest) {
   try {
     // Parse the target URL to validate it
     const parsedUrl = new URL(targetUrl)
+    
+    // Check if this domain should use minimal proxy mode
+    const useMinimalProxy = minimalMode || MINIMAL_PROXY_DOMAINS.some(domain => 
+      parsedUrl.hostname.includes(domain)
+    )
 
     // Fetch the external content
     const response = await fetch(targetUrl, {
@@ -60,6 +78,71 @@ export async function GET(request: NextRequest) {
       
       // Get the base URL for rewriting
       const baseUrl = `${parsedUrl.protocol}//${parsedUrl.host}`
+      
+      // MINIMAL PROXY MODE: For game sites and SPAs
+      // Only add base tag and minimal script, don't rewrite URLs aggressively
+      if (useMinimalProxy) {
+        // Add base tag to help resolve relative URLs naturally
+        if (html.includes('<head>')) {
+          html = html.replace(
+            '<head>',
+            `<head><base href="${baseUrl}/">`
+          )
+        } else if (html.includes('<html')) {
+          html = html.replace(
+            /(<html[^>]*>)/i,
+            `$1<head><base href="${baseUrl}/"></head>`
+          )
+        }
+
+        // Inject minimal script to handle navigation only when user clicks links
+        const minimalScript = `
+          <script>
+            (function() {
+              // Only intercept actual navigation clicks, not programmatic ones
+              document.addEventListener('click', function(e) {
+                const link = e.target.closest('a');
+                if (link && link.href) {
+                  const href = link.getAttribute('href');
+                  // Skip javascript:, #, and already proxied links
+                  if (!href || href.startsWith('javascript:') || href.startsWith('#') || href.includes('/api/proxy')) {
+                    return;
+                  }
+                  // Only intercept if it would navigate away
+                  try {
+                    const url = new URL(link.href);
+                    if (url.origin !== '${baseUrl}') {
+                      // External link - proxy it
+                      e.preventDefault();
+                      window.location.href = '/api/proxy?url=' + encodeURIComponent(link.href) + '&minimal=true';
+                    }
+                  } catch (err) {
+                    // Invalid URL, let browser handle it
+                  }
+                }
+              }, false);
+            })();
+          </script>
+        `
+
+        // Insert script at end of body or document
+        if (html.includes('</body>')) {
+          html = html.replace('</body>', `${minimalScript}</body>`)
+        } else {
+          html += minimalScript
+        }
+
+        return new NextResponse(html, {
+          status: 200,
+          headers: {
+            'Content-Type': 'text/html; charset=utf-8',
+            'X-Frame-Options': 'SAMEORIGIN',
+            'Cache-Control': 'no-store',
+          },
+        })
+      }
+      
+      // FULL PROXY MODE: For regular websites
       
       // Rewrite relative URLs in href and src attributes to go through our proxy
       // Match href="..." or src="..." but not absolute URLs, data:, javascript:, or #

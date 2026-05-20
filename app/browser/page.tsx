@@ -225,7 +225,7 @@ function QuickLinks({ onNavigate }: { onNavigate: (url: string, direct?: boolean
   const quickLinks = [
     { name: 'DuckDuckGo', url: 'https://duckduckgo.com', icon: '🦆', direct: false },
     { name: 'Wikipedia', url: 'https://wikipedia.org', icon: '📚', direct: false },
-    { name: 'GN Math', url: 'https://gn-math.dev', icon: '🎮', direct: true },
+    { name: 'GN Math', url: 'https://gn-math.dev', icon: '🎮', direct: false },
     { name: 'GitHub', url: 'https://github.com', icon: '💻', direct: false },
   ]
 
