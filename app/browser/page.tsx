@@ -223,10 +223,10 @@ function BrowserControls({
 // ============================================
 function QuickLinks({ onNavigate }: { onNavigate: (url: string, direct?: boolean) => void }) {
   const quickLinks = [
-    { name: 'DuckDuckGo', url: 'https://duckduckgo.com', icon: '🦆', direct: false },
-    { name: 'Wikipedia', url: 'https://wikipedia.org', icon: '📚', direct: false },
-    { name: 'GN Math', url: 'https://gn-math.dev', icon: '🎮', direct: false },
-    { name: 'GitHub', url: 'https://github.com', icon: '💻', direct: false },
+    { name: 'DuckDuckGo', url: 'https://duckduckgo.com', icon: '🦆' },
+    { name: 'Wikipedia', url: 'https://wikipedia.org', icon: '📚' },
+    { name: 'GN Math', url: 'https://gn-math.dev', icon: '🎮' },
+    { name: 'GitHub', url: 'https://github.com', icon: '💻' },
   ]
 
   return (
@@ -234,7 +234,7 @@ function QuickLinks({ onNavigate }: { onNavigate: (url: string, direct?: boolean
       {quickLinks.map((link) => (
         <button
           key={link.url}
-          onClick={() => onNavigate(link.url, link.direct)}
+          onClick={() => onNavigate(link.url)}
           className="flex flex-col items-center gap-2 p-4 rounded-xl bg-card/50 border border-border hover:border-primary/50 hover:bg-card transition-all"
         >
           <span className="text-2xl">{link.icon}</span>
@@ -524,11 +524,12 @@ function BrowserContent() {
             {/* The iframe */}
             <iframe
               ref={iframeRef}
-              src={isDirect ? currentUrl : getProxyUrl(currentUrl)}
+              src={getProxyUrl(currentUrl)}
               onLoad={handleIframeLoad}
               className="w-full h-full border-0"
-              sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-pointer-lock"
-              allow="fullscreen; autoplay; clipboard-write"
+              sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox allow-pointer-lock allow-downloads allow-modals allow-presentation"
+              allow="fullscreen; autoplay; clipboard-write; encrypted-media; gyroscope; accelerometer; web-share"
+              referrerPolicy="no-referrer-when-downgrade"
               title="Web Browser"
             />
           </>

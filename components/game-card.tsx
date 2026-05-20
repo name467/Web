@@ -54,13 +54,13 @@ export function GameCard({ game, onPlay, size = 'medium' }: GameCardProps) {
 
   /**
    * Handle play button click
-   * Opens gn-math.dev through the browser proxy
+   * Opens gn-math.dev through the browser proxy in the same tab
    */
   const handlePlayClick = () => {
     playSound('success');
     addToRecentlyPlayed(game.id);
     
-    // All games open gn-math.dev through our proxy
+    // Open gn-math.dev through our proxy in the browser page
     const browserUrl = `/browser?url=${encodeURIComponent('https://gn-math.dev')}&game=${game.id}&name=${encodeURIComponent(game.title)}`;
     router.push(browserUrl);
     

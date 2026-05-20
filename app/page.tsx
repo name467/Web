@@ -173,7 +173,7 @@ function QuickLink({
   href, 
   icon, 
   title, 
-  description 
+  description
 }: { 
   href: string; 
   icon: React.ReactNode; 
