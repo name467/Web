@@ -52,21 +52,21 @@ const navItems = [
     label: 'Home', 
     icon: Home,
     shortcut: 'H',
-    description: 'Dashboard & Featured Games'
+    description: 'Welcome to NeonVault'
   },
   { 
-    href: '/games', 
+    href: '/browser?url=https://gn-math.dev', 
     label: 'Games', 
     icon: Gamepad2,
     shortcut: 'G',
-    description: 'Browse Game Library'
+    description: 'Play Games'
   },
   { 
     href: '/browser', 
     label: 'Browser', 
     icon: Globe,
     shortcut: 'B',
-    description: 'Open Game Browser'
+    description: 'Open Web Browser'
   },
   { 
     href: '/settings', 

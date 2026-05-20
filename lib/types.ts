@@ -145,6 +145,13 @@ export interface UserSettings {
   particlesEnabled: boolean;    // Background particles toggle
   closeConfirmation: boolean;   // Show confirm dialog when leaving games
   
+  // Tab Cloaking
+  tabCloakEnabled: boolean;     // Enable tab cloaking
+  tabCloakTitle: string;        // Custom tab title
+  tabCloakFavicon: string;      // Custom favicon URL
+  openInAboutBlank: boolean;    // Open site in about:blank
+  closeTabConfirmation: boolean; // Ask for confirmation when closing tab
+  
   // Accessibility
   highContrast: boolean;        // High contrast mode
   largeText: boolean;           // Increase text sizes
@@ -183,6 +190,11 @@ export const DEFAULT_SETTINGS: UserSettings = {
   showFPS: false,
   particlesEnabled: true,
   closeConfirmation: true,
+  tabCloakEnabled: false,
+  tabCloakTitle: 'Google',
+  tabCloakFavicon: 'https://www.google.com/favicon.ico',
+  openInAboutBlank: false,
+  closeTabConfirmation: false,
   highContrast: false,
   largeText: false,
   screenReaderOptimized: false,
@@ -249,7 +261,7 @@ export interface UIState {
   sidebarOpen: boolean;
   searchOpen: boolean;
   isLoading: boolean;
-  currentPage: 'home' | 'games' | 'settings';
+  currentPage: 'home' | 'games' | 'browser' | 'settings';
   hasUnsavedChanges: boolean;
   isGameActive: boolean;
 }
