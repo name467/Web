@@ -221,12 +221,12 @@ function BrowserControls({
 // ============================================
 // QUICK LINKS COMPONENT - Shown on home
 // ============================================
-function QuickLinks({ onNavigate }: { onNavigate: (url: string) => void }) {
+function QuickLinks({ onNavigate }: { onNavigate: (url: string, direct?: boolean) => void }) {
   const quickLinks = [
-    { name: 'DuckDuckGo', url: 'https://duckduckgo.com', icon: '🦆' },
-    { name: 'Wikipedia', url: 'https://wikipedia.org', icon: '📚' },
-    { name: 'GN Math', url: 'https://gn-math.dev', icon: '🎮' },
-    { name: 'GitHub', url: 'https://github.com', icon: '💻' },
+    { name: 'DuckDuckGo', url: 'https://duckduckgo.com', icon: '🦆', direct: false },
+    { name: 'Wikipedia', url: 'https://wikipedia.org', icon: '📚', direct: false },
+    { name: 'GN Math', url: 'https://gn-math.dev', icon: '🎮', direct: true },
+    { name: 'GitHub', url: 'https://github.com', icon: '💻', direct: false },
   ]
 
   return (
@@ -234,7 +234,7 @@ function QuickLinks({ onNavigate }: { onNavigate: (url: string) => void }) {
       {quickLinks.map((link) => (
         <button
           key={link.url}
-          onClick={() => onNavigate(link.url)}
+          onClick={() => onNavigate(link.url, link.direct)}
           className="flex flex-col items-center gap-2 p-4 rounded-xl bg-card/50 border border-border hover:border-primary/50 hover:bg-card transition-all"
         >
           <span className="text-2xl">{link.icon}</span>
@@ -257,6 +257,7 @@ function BrowserContent() {
   const initialUrl = searchParams.get('url') || ''
   const gameId = searchParams.get('game')
   const gameName = searchParams.get('name')
+  const directMode = searchParams.get('direct') === 'true' // Load directly without proxy
   
   // State
   const [currentUrl, setCurrentUrl] = useState(initialUrl)
@@ -266,6 +267,7 @@ function BrowserContent() {
   const [isLoading, setIsLoading] = useState(!!initialUrl)
   const [isFullscreen, setIsFullscreen] = useState(false)
   const [showHome, setShowHome] = useState(!initialUrl)
+  const [isDirect, setIsDirect] = useState(directMode)
   
   const iframeRef = useRef<HTMLIFrameElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
@@ -284,15 +286,19 @@ function BrowserContent() {
   }, [])
 
   // Navigate to a URL
-  const navigateTo = useCallback((url: string) => {
+  const navigateTo = useCallback((url: string, direct: boolean = false) => {
     setIsLoading(true)
     setShowHome(false)
     setCurrentUrl(url)
     setDisplayUrl(url)
+    setIsDirect(direct)
     
     // Update URL in browser bar without full page reload
     const newSearchParams = new URLSearchParams()
     newSearchParams.set('url', url)
+    if (direct) {
+      newSearchParams.set('direct', 'true')
+    }
     window.history.replaceState(null, '', `/browser?${newSearchParams.toString()}`)
     
     // Add to history
@@ -331,10 +337,10 @@ function BrowserContent() {
     if (currentUrl) {
       setIsLoading(true)
       if (iframeRef.current) {
-        iframeRef.current.src = getProxyUrl(currentUrl)
+        iframeRef.current.src = isDirect ? currentUrl : getProxyUrl(currentUrl)
       }
     }
-  }, [currentUrl, getProxyUrl])
+  }, [currentUrl, getProxyUrl, isDirect])
 
   const goHome = useCallback(() => {
     setShowHome(true)
@@ -518,7 +524,7 @@ function BrowserContent() {
             {/* The iframe */}
             <iframe
               ref={iframeRef}
-              src={getProxyUrl(currentUrl)}
+              src={isDirect ? currentUrl : getProxyUrl(currentUrl)}
               onLoad={handleIframeLoad}
               className="w-full h-full border-0"
               sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-pointer-lock"
