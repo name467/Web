@@ -47,6 +47,10 @@ import {
   Paintbrush,
   Eye,
   Type,
+  Shield,
+  EyeOff,
+  ExternalLink,
+  AlertTriangle,
 } from 'lucide-react';
 
 /**
@@ -161,10 +165,14 @@ export default function SettingsPage() {
         {/* Tabs for different setting categories */}
         <Tabs defaultValue="appearance" className="space-y-6">
           {/* Tab list */}
-          <TabsList className="grid grid-cols-2 md:grid-cols-5 gap-2 h-auto p-1 bg-muted/50">
+          <TabsList className="grid grid-cols-3 md:grid-cols-6 gap-2 h-auto p-1 bg-muted/50">
             <TabsTrigger value="appearance" className="flex items-center gap-2 py-2">
               <Palette className="w-4 h-4" />
               <span className="hidden sm:inline">Appearance</span>
+            </TabsTrigger>
+            <TabsTrigger value="privacy" className="flex items-center gap-2 py-2">
+              <Shield className="w-4 h-4" />
+              <span className="hidden sm:inline">Privacy</span>
             </TabsTrigger>
             <TabsTrigger value="audio" className="flex items-center gap-2 py-2">
               <Volume2 className="w-4 h-4" />
@@ -382,6 +390,173 @@ export default function SettingsPage() {
                     onCheckedChange={(v) => handleSettingChange('particlesEnabled', v)}
                   />
                 </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* =================================================================
+              PRIVACY TAB - Tab Cloaking & Security
+          ================================================================= */}
+          <TabsContent value="privacy" className="space-y-6">
+            {/* Tab Cloaking */}
+            <Card className="bg-card border-border">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <EyeOff className="w-5 h-5 text-primary" />
+                  Tab Cloaking
+                </CardTitle>
+                <CardDescription>
+                  Disguise this site to look like another website
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                {/* Enable tab cloak */}
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Label>Enable Tab Cloaking</Label>
+                    <p className="text-sm text-muted-foreground">
+                      Change the tab title and favicon to disguise this site
+                    </p>
+                  </div>
+                  <Switch
+                    checked={settings.tabCloakEnabled}
+                    onCheckedChange={(v) => handleSettingChange('tabCloakEnabled', v)}
+                  />
+                </div>
+
+                {/* Custom title */}
+                <div className="space-y-2">
+                  <Label>Tab Title</Label>
+                  <Input
+                    value={settings.tabCloakTitle}
+                    onChange={(e) => handleSettingChange('tabCloakTitle', e.target.value)}
+                    placeholder="Google"
+                    disabled={!settings.tabCloakEnabled}
+                    className="bg-background/50"
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    The title that will appear in the browser tab
+                  </p>
+                </div>
+
+                {/* Custom favicon */}
+                <div className="space-y-2">
+                  <Label>Favicon URL</Label>
+                  <Input
+                    value={settings.tabCloakFavicon}
+                    onChange={(e) => handleSettingChange('tabCloakFavicon', e.target.value)}
+                    placeholder="https://www.google.com/favicon.ico"
+                    disabled={!settings.tabCloakEnabled}
+                    className="bg-background/50"
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    The icon that will appear in the browser tab
+                  </p>
+                </div>
+
+                {/* Preset cloaks */}
+                <div className="space-y-2">
+                  <Label>Quick Presets</Label>
+                  <div className="flex flex-wrap gap-2">
+                    {[
+                      { name: 'Google', title: 'Google', favicon: 'https://www.google.com/favicon.ico' },
+                      { name: 'Google Drive', title: 'My Drive - Google Drive', favicon: 'https://ssl.gstatic.com/images/branding/product/1x/drive_2020q4_32dp.png' },
+                      { name: 'Google Docs', title: 'Google Docs', favicon: 'https://ssl.gstatic.com/docs/documents/images/kix-favicon7.ico' },
+                      { name: 'Canvas', title: 'Dashboard', favicon: 'https://du11hjcvx0uqb.cloudfront.net/dist/images/favicon-e10d657a73.ico' },
+                      { name: 'Schoology', title: 'Home | Schoology', favicon: 'https://asset-cdn.schoology.com/sites/all/themes/flavor/favicon.ico' },
+                    ].map((preset) => (
+                      <Button
+                        key={preset.name}
+                        variant="outline"
+                        size="sm"
+                        disabled={!settings.tabCloakEnabled}
+                        onClick={() => {
+                          handleSettingChange('tabCloakTitle', preset.title);
+                          handleSettingChange('tabCloakFavicon', preset.favicon);
+                        }}
+                      >
+                        {preset.name}
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* About:Blank Cloak */}
+            <Card className="bg-card border-border">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <ExternalLink className="w-5 h-5 text-primary" />
+                  About:Blank Cloak
+                </CardTitle>
+                <CardDescription>
+                  Open the site in a new about:blank window for extra privacy
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Label>Open in About:Blank</Label>
+                    <p className="text-sm text-muted-foreground">
+                      Opens NeonVault inside an about:blank tab for better privacy
+                    </p>
+                  </div>
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      const win = window.open('about:blank', '_blank');
+                      if (win) {
+                        win.document.body.style.margin = '0';
+                        win.document.body.style.height = '100vh';
+                        const iframe = win.document.createElement('iframe');
+                        iframe.style.border = 'none';
+                        iframe.style.width = '100%';
+                        iframe.style.height = '100%';
+                        iframe.style.margin = '0';
+                        iframe.src = window.location.href;
+                        win.document.body.appendChild(iframe);
+                      }
+                    }}
+                  >
+                    Open Now
+                  </Button>
+                </div>
+                <p className="text-xs text-muted-foreground bg-muted/50 p-3 rounded-lg">
+                  This will open a new tab with a blank URL. The site runs inside an iframe, 
+                  making it harder to see what you&apos;re viewing from the URL bar.
+                </p>
+              </CardContent>
+            </Card>
+
+            {/* Close Tab Confirmation */}
+            <Card className="bg-card border-border">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <AlertTriangle className="w-5 h-5 text-primary" />
+                  Close Tab Protection
+                </CardTitle>
+                <CardDescription>
+                  Get a warning before accidentally closing the tab
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Label>Close Tab Confirmation</Label>
+                    <p className="text-sm text-muted-foreground">
+                      Show a confirmation dialog when trying to close the tab
+                    </p>
+                  </div>
+                  <Switch
+                    checked={settings.closeTabConfirmation}
+                    onCheckedChange={(v) => handleSettingChange('closeTabConfirmation', v)}
+                  />
+                </div>
+                <p className="text-xs text-muted-foreground bg-muted/50 p-3 rounded-lg">
+                  When enabled, the browser will ask for confirmation before closing or 
+                  refreshing the page to prevent accidental loss of your session.
+                </p>
               </CardContent>
             </Card>
           </TabsContent>

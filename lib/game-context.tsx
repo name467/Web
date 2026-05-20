@@ -199,6 +199,56 @@ export function GameProvider({ children }: GameProviderProps) {
   }, [settings, isHydrated]);
 
   // -------------------------------------------------------------------------
+  // APPLY TAB CLOAKING
+  // -------------------------------------------------------------------------
+  
+  useEffect(() => {
+    if (!isHydrated) return;
+    
+    if (settings.tabCloakEnabled) {
+      // Update document title
+      document.title = settings.tabCloakTitle || 'Google';
+      
+      // Update favicon
+      const existingFavicon = document.querySelector("link[rel*='icon']") as HTMLLinkElement;
+      if (existingFavicon) {
+        existingFavicon.href = settings.tabCloakFavicon || 'https://www.google.com/favicon.ico';
+      } else {
+        const favicon = document.createElement('link');
+        favicon.rel = 'icon';
+        favicon.href = settings.tabCloakFavicon || 'https://www.google.com/favicon.ico';
+        document.head.appendChild(favicon);
+      }
+    } else {
+      // Reset to default
+      document.title = 'NeonVault';
+      const existingFavicon = document.querySelector("link[rel*='icon']") as HTMLLinkElement;
+      if (existingFavicon) {
+        existingFavicon.href = '/favicon.ico';
+      }
+    }
+  }, [settings.tabCloakEnabled, settings.tabCloakTitle, settings.tabCloakFavicon, isHydrated]);
+
+  // -------------------------------------------------------------------------
+  // CLOSE TAB CONFIRMATION
+  // -------------------------------------------------------------------------
+  
+  useEffect(() => {
+    if (!isHydrated) return;
+    
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (settings.closeTabConfirmation) {
+        e.preventDefault();
+        e.returnValue = '';
+        return '';
+      }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [settings.closeTabConfirmation, isHydrated]);
+
+  // -------------------------------------------------------------------------
   // PERSIST USER DATA TO LOCALSTORAGE
   // -------------------------------------------------------------------------
   
