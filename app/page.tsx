@@ -63,16 +63,17 @@ export default function HomePage() {
 
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
-            <Link href="/browser?url=https://gn-math.dev">
-              <Button 
-                size="lg" 
-                className="bg-primary text-primary-foreground hover:bg-primary/90 text-lg px-8 py-6"
-                onClick={() => playSound('click')}
-              >
-                <Gamepad2 className="w-5 h-5 mr-2" />
-                Play Games
-              </Button>
-            </Link>
+            <Button 
+              size="lg" 
+              className="bg-primary text-primary-foreground hover:bg-primary/90 text-lg px-8 py-6"
+              onClick={() => {
+                playSound('click');
+                window.open('https://gn-math.dev', '_blank', 'noopener,noreferrer');
+              }}
+            >
+              <Gamepad2 className="w-5 h-5 mr-2" />
+              Play Games
+            </Button>
             <Link href="/browser">
               <Button 
                 size="lg" 
@@ -118,10 +119,11 @@ export default function HomePage() {
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             <QuickLink 
-              href="/browser?url=https://gn-math.dev"
+              href="https://gn-math.dev"
               icon={<Gamepad2 className="w-6 h-6" />}
               title="Games"
               description="Browse and play games"
+              external
             />
             <QuickLink 
               href="/browser"
@@ -173,29 +175,46 @@ function QuickLink({
   href, 
   icon, 
   title, 
-  description 
+  description,
+  external = false
 }: { 
   href: string; 
   icon: React.ReactNode; 
   title: string; 
   description: string;
+  external?: boolean;
 }) {
   const { playSound } = useGame();
   
+  const handleClick = () => {
+    playSound('click');
+    if (external) {
+      window.open(href, '_blank', 'noopener,noreferrer');
+    }
+  };
+
+  const content = (
+    <div 
+      className="flex items-center gap-4 p-4 rounded-xl bg-card border border-border hover:border-primary/50 hover:bg-card/80 transition-all duration-300 group cursor-pointer"
+      onClick={handleClick}
+    >
+      <div className="p-3 rounded-lg bg-primary/10 text-primary group-hover:scale-110 transition-transform">
+        {icon}
+      </div>
+      <div>
+        <h3 className="font-semibold text-foreground">{title}</h3>
+        <p className="text-sm text-muted-foreground">{description}</p>
+      </div>
+    </div>
+  );
+
+  if (external) {
+    return content;
+  }
+  
   return (
     <Link href={href}>
-      <div 
-        className="flex items-center gap-4 p-4 rounded-xl bg-card border border-border hover:border-primary/50 hover:bg-card/80 transition-all duration-300 group cursor-pointer"
-        onClick={() => playSound('click')}
-      >
-        <div className="p-3 rounded-lg bg-primary/10 text-primary group-hover:scale-110 transition-transform">
-          {icon}
-        </div>
-        <div>
-          <h3 className="font-semibold text-foreground">{title}</h3>
-          <p className="text-sm text-muted-foreground">{description}</p>
-        </div>
-      </div>
+      {content}
     </Link>
   );
 }

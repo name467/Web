@@ -37,7 +37,8 @@ import {
   User,
   Keyboard,
   X,
-  Globe
+  Globe,
+  ExternalLink
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
@@ -52,28 +53,32 @@ const navItems = [
     label: 'Home', 
     icon: Home,
     shortcut: 'H',
-    description: 'Welcome to NeonVault'
+    description: 'Welcome to NeonVault',
+    external: false
   },
   { 
-    href: '/browser?url=https://gn-math.dev', 
+    href: 'https://gn-math.dev', 
     label: 'Games', 
     icon: Gamepad2,
     shortcut: 'G',
-    description: 'Play Games'
+    description: 'Play Games',
+    external: true
   },
   { 
     href: '/browser', 
     label: 'Browser', 
     icon: Globe,
     shortcut: 'B',
-    description: 'Open Web Browser'
+    description: 'Open Web Browser',
+    external: false
   },
   { 
     href: '/settings', 
     label: 'Settings', 
     icon: Settings,
     shortcut: ',',
-    description: 'Customize Your Experience'
+    description: 'Customize Your Experience',
+    external: false
   },
 ];
 
@@ -236,16 +241,31 @@ export function Sidebar() {
             </p>
             <ul className="space-y-1">
               {navItems.map((item) => {
-                const isActive = pathname === item.href;
+                const isActive = !item.external && pathname === item.href;
                 const Icon = item.icon;
+                
+                // Handle external links (like games) differently
+                const handleClick = (e: React.MouseEvent) => {
+                  if (item.external) {
+                    e.preventDefault();
+                    playSound('click');
+                    window.open(item.href, '_blank', 'noopener,noreferrer');
+                    // Close sidebar on mobile
+                    if (window.innerWidth < 1024) {
+                      setSidebarOpen(false);
+                    }
+                  } else {
+                    handleNavClick();
+                  }
+                };
                 
                 return (
                   <li key={item.href}>
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <Link
-                          href={item.href}
-                          onClick={handleNavClick}
+                          href={item.external ? '#' : item.href}
+                          onClick={handleClick}
                           className={`
                             flex items-center gap-3 px-3 py-2.5 rounded-lg
                             transition-all duration-200
@@ -259,6 +279,13 @@ export function Sidebar() {
                         >
                           <Icon className={`w-5 h-5 transition-transform duration-200 ${isActive ? 'text-primary' : ''} group-hover:scale-110`} />
                           <span className="flex-1 font-medium">{item.label}</span>
+                          
+                          {/* External link indicator */}
+                          {item.external && (
+                            <span className="text-xs text-muted-foreground">
+                              <ExternalLink className="w-3 h-3" />
+                            </span>
+                          )}
                           
                           {/* Keyboard shortcut hint */}
                           <span className="text-xs text-muted-foreground bg-muted px-1.5 py-0.5 rounded font-mono">
