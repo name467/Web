@@ -55,7 +55,7 @@ const navItems = [
     description: 'Welcome to NeonVault'
   },
   { 
-    href: '/browser?url=https://gn-math.dev&direct=true', 
+    href: '/browser?url=https://gn-math.dev', 
     label: 'Games', 
     icon: Gamepad2,
     shortcut: 'G',
